@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d1117;
+  --background-soft: #121821;
+  --surface: #151b23;
+  --card: #171d26;
+  --border: #232c39;
+  --primary: #4f7cff;
+  --primary-hover: #648cff;
+  --secondary: #10b981;
+  --warning: #f59e0b;
+  --danger: #f43f5e;
+  --foreground: #f9fafb;
+  --muted-foreground: #9ca3af;
+  --ring: rgba(79, 124, 255, 0.24);
+  --shadow-card: 0 12px 32px rgba(2, 6, 23, 0.18);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Segoe UI", "IBM Plex Sans Arabic", "SF Pro Display", "Helvetica Neue", sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Segoe UI", "IBM Plex Sans Arabic", "SF Pro Display", "Helvetica Neue", sans-serif;
+  background-image: linear-gradient(180deg, #0d1117 0%, #0f141b 100%);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: rgba(79, 124, 255, 0.28);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(156, 163, 175, 0.28);
+  border: 2px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.4);
+}
+
+.glass-panel {
+  background: rgba(21, 27, 35, 0.94);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
+}
+
+.section-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.soft-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.field-label {
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
