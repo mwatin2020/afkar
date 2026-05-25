@@ -23,7 +23,7 @@ export function IdeaCard({ idea }: { idea: Idea }) {
     >
       <div dir="rtl" className="space-y-3.5 text-right">
         <h2 className="line-clamp-2 text-[20px] font-semibold leading-9 text-white">{idea.title}</h2>
-        <p className="line-clamp-4 whitespace-pre-wrap text-[16px] leading-[1.85] text-[#dde3ec]">{preview}</p>
+        <p className="line-clamp-3 whitespace-pre-wrap break-words text-[16px] leading-[1.85] text-[#dde3ec]">{preview}</p>
         <div className="meta-text flex items-center justify-end gap-1.5">
           <Clock3 className="h-3.5 w-3.5" />
           <span>{formatDate(idea.updated_at || idea.created_at)}</span>

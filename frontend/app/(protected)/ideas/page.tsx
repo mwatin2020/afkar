@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { ArrowDownAZ, ArrowUpAZ, Plus, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { IdeaCard } from "@/components/ideas/IdeaCard";
@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import type { Idea } from "@/lib/types";
 
 type SortKey = "newest" | "oldest";
@@ -34,12 +35,14 @@ export default function IdeasPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     title: "",
     content: "",
   });
+  const sortMenuRef = useRef<HTMLDivElement | null>(null);
 
   async function loadIdeas(currentSearch: string) {
     const params = new URLSearchParams();
@@ -56,6 +59,19 @@ export default function IdeasPage() {
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load ideas."))
       .finally(() => setLoading(false));
   }, [search]);
+
+  useEffect(() => {
+    if (!sortMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!sortMenuRef.current?.contains(event.target as Node)) {
+        setSortMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, [sortMenuOpen]);
 
   const visibleIdeas = useMemo(() => {
     const list = [...ideas];
@@ -105,36 +121,74 @@ export default function IdeasPage() {
       </section>
 
       <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Button
-            variant={showCreate ? "outline" : "default"}
-            size="sm"
-            className="shrink-0 rounded-full px-3"
-            onClick={() => setShowCreate((value) => !value)}
-          >
-            {showCreate ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-            <span className="sm:hidden">{showCreate ? "إغلاق" : "+ فكرة"}</span>
-            <span className="hidden sm:inline">{showCreate ? "إغلاق" : "فكرة جديدة"}</span>
-          </Button>
+        <div>
+          <Input
+            dir="rtl"
+            className="h-11 w-full rounded-xl border-white/8 bg-white/[0.03] text-right"
+            placeholder="ابحث في الأفكار"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 rounded-full px-3"
-            onClick={() => setSort((current) => (current === "newest" ? "oldest" : "newest"))}
-          >
-            {sort === "newest" ? <ArrowDownAZ className="h-3.5 w-3.5" /> : <ArrowUpAZ className="h-3.5 w-3.5" />}
-            {sort === "newest" ? "الأحدث" : "الأقدم"}
-          </Button>
+        <div className="flex items-center justify-between gap-3">
+          <div ref={sortMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setSortMenuOpen((value) => !value)}
+              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm font-medium text-white transition-colors hover:border-white/15 hover:bg-white/[0.06]"
+            >
+              <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", sortMenuOpen ? "rotate-180" : "")} />
+              <span>{sort === "newest" ? "الأحدث" : "الأقدم"}</span>
+            </button>
 
-          <div className="min-w-0 flex-1">
-            <Input
-              dir="rtl"
-              className="h-11 rounded-xl border-white/8 bg-white/[0.03] text-right"
-              placeholder="ابحث في الأفكار"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            {sortMenuOpen ? (
+              <div className="absolute right-0 top-11 z-20 min-w-28 rounded-2xl border border-white/10 bg-[#10151d] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.35)]">
+                <button
+                  type="button"
+                  className={cn("block w-full rounded-xl px-3 py-2 text-right text-sm transition-colors", sort === "newest" ? "bg-white/[0.08] text-white" : "text-zinc-300 hover:bg-white/[0.05] hover:text-white")}
+                  onClick={() => {
+                    setSort("newest");
+                    setSortMenuOpen(false);
+                  }}
+                >
+                  الأحدث
+                </button>
+                <button
+                  type="button"
+                  className={cn("block w-full rounded-xl px-3 py-2 text-right text-sm transition-colors", sort === "oldest" ? "bg-white/[0.08] text-white" : "text-zinc-300 hover:bg-white/[0.05] hover:text-white")}
+                  onClick={() => {
+                    setSort("oldest");
+                    setSortMenuOpen(false);
+                  }}
+                >
+                  الأقدم
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-full border-white/10 bg-white/[0.03]"
+              onClick={() => setShowCreate(true)}
+              aria-label="إضافة فكرة"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            {showCreate ? (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 rounded-full border-white/10 bg-white/[0.03]"
+                onClick={() => setShowCreate(false)}
+                aria-label="إخفاء نموذج الفكرة"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+            ) : null}
           </div>
         </div>
 

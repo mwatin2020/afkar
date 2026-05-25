@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Copy, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Copy, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -133,7 +133,11 @@ export default function IdeaDetailPage() {
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link href="/ideas" className="meta-text transition-colors hover:text-white">
+        <Link
+          href="/ideas"
+          className="inline-flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-sm font-medium text-white transition-colors hover:border-white/15 hover:bg-white/[0.06]"
+        >
+          <ChevronRight className="h-4 w-4" />
           العودة إلى الأفكار
         </Link>
         <div className="flex flex-wrap items-center gap-2">
