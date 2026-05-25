@@ -16,14 +16,14 @@ export function PageHeader({
   actions?: React.ReactNode;
   className?: string;
 }) {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
 
   return (
     <div className={cn("flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between", className)}>
       <div className="space-y-2">
-        <div className="text-[11px] font-medium uppercase tracking-[0.32em] text-[var(--muted-foreground)]">{eyebrow ?? t.common.workspace}</div>
-        <div className="text-3xl font-semibold tracking-tight text-white">{title}</div>
-        {description ? <div className="max-w-2xl text-sm leading-7 text-[var(--muted-foreground)]">{description}</div> : null}
+        <div className={cn("text-[12px] font-medium text-[var(--muted-foreground)]", dir === "ltr" ? "uppercase tracking-[0.18em]" : "tracking-normal")}>{eyebrow ?? t.common.workspace}</div>
+        <div className="text-[30px] font-semibold leading-[1.25] text-white md:text-[34px]">{title}</div>
+        {description ? <div className="muted-readable max-w-2xl text-base leading-8">{description}</div> : null}
       </div>
       {actions ? <div className="flex items-center gap-3">{actions}</div> : null}
     </div>

@@ -20,7 +20,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Segoe UI", "IBM Plex Sans Arabic", "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Noto Sans", sans-serif;
 }
 
 * {
@@ -34,10 +34,28 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Segoe UI", "IBM Plex Sans Arabic", "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Noto Sans", sans-serif;
   background-image: linear-gradient(180deg, #0d1117 0%, #0f141b 100%);
-  letter-spacing: -0.01em;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+html[dir="rtl"] body {
+  letter-spacing: 0;
+}
+
+html[dir="ltr"] body {
+  letter-spacing: -0.01em;
+}
+
+p,
+li,
+textarea,
+input {
+  line-height: 1.75;
 }
 
 ::selection {
@@ -82,11 +100,31 @@ body {
 .field-label {
   margin-bottom: 0.5rem;
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
+  color: #d5d9e1;
+}
+
+html[dir="ltr"] .field-label {
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--muted-foreground);
+}
+
+.prose-note {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #e7ebf2;
+}
+
+.muted-readable {
+  color: #b9c1cd;
+}
+
+.meta-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #a9b1bd;
 }
 
 button,

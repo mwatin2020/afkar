@@ -118,8 +118,8 @@ export default function IdeaDetailPage() {
     }
   }
 
-  if (loading) return <div dir="rtl" className="text-sm text-zinc-500">جاري التحميل...</div>;
-  if (error || !idea) return <div dir="rtl" className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error || "تعذر العثور على الفكرة."}</div>;
+  if (loading) return <div dir="rtl" className="meta-text">جاري التحميل...</div>;
+  if (error || !idea) return <div dir="rtl" className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-base leading-8 text-rose-100">{error || "تعذر العثور على الفكرة."}</div>;
 
   return (
     <div dir="rtl" className="space-y-6">
@@ -133,7 +133,7 @@ export default function IdeaDetailPage() {
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link href="/ideas" className="text-sm text-zinc-400 transition-colors hover:text-white">
+        <Link href="/ideas" className="meta-text transition-colors hover:text-white">
           العودة إلى الأفكار
         </Link>
         <div className="flex flex-wrap items-center gap-2">
@@ -154,7 +154,7 @@ export default function IdeaDetailPage() {
 
       <section className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5 md:p-6">
         {editing ? (
-          <div className="space-y-4">
+          <div className="mx-auto max-w-3xl space-y-4">
             <div>
               <label className="field-label">اسم الفكرة</label>
               <Input dir="rtl" className="text-right" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
@@ -173,12 +173,12 @@ export default function IdeaDetailPage() {
             </Button>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="mx-auto max-w-3xl space-y-6">
             <div className="space-y-2 text-right">
-              <h1 className="text-2xl font-semibold text-white md:text-3xl">{idea.title}</h1>
-              <div className="text-sm text-zinc-400">التاريخ: {formatDate(idea.updated_at || idea.created_at)}</div>
+              <h1 className="text-[30px] font-semibold leading-[1.35] text-white md:text-[34px]">{idea.title}</h1>
+              <div className="meta-text">التاريخ: {formatDate(idea.updated_at || idea.created_at)}</div>
             </div>
-            <div className="whitespace-pre-wrap text-right text-[15px] leading-8 text-zinc-200">{idea.content}</div>
+            <div className="prose-note whitespace-pre-wrap text-right">{idea.content}</div>
           </div>
         )}
       </section>

@@ -100,8 +100,8 @@ export default function IdeasPage() {
   return (
     <div dir="rtl" className="space-y-5">
       <section className="space-y-1 text-right">
-        <h1 className="text-[26px] font-semibold tracking-tight text-white">الأفكار</h1>
-        <p className="text-sm leading-7 text-[var(--muted-foreground)]">احفظ الفكرة بسرعة ثم ارجع إليها لاحقًا.</p>
+        <h1 className="text-[30px] font-semibold leading-[1.25] text-white md:text-[34px]">الأفكار</h1>
+        <p className="muted-readable max-w-2xl text-[16px] leading-8">احفظ الفكرة بسرعة ثم ارجع إليها لاحقًا.</p>
       </section>
 
       <section className="space-y-3">
@@ -130,7 +130,7 @@ export default function IdeasPage() {
           <div className="min-w-0 flex-1">
             <Input
               dir="rtl"
-              className="h-10 rounded-xl border-white/8 bg-white/[0.03] text-right"
+              className="h-11 rounded-xl border-white/8 bg-white/[0.03] text-right"
               placeholder="ابحث في الأفكار"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -138,14 +138,14 @@ export default function IdeasPage() {
           </div>
         </div>
 
-        <div className="text-right text-sm text-zinc-500">{visibleIdeas.length} فكرة</div>
+        <div className="meta-text text-right">{visibleIdeas.length} فكرة</div>
       </section>
 
       {showCreate ? (
         <section className="rounded-[18px] border border-white/8 bg-white/[0.025] p-4">
           <div className="space-y-4">
             <div className="text-right">
-              <h2 className="text-sm font-semibold text-white">فكرة جديدة</h2>
+              <h2 className="text-[20px] font-semibold leading-8 text-white">فكرة جديدة</h2>
             </div>
             <div>
               <label className="field-label">اسم الفكرة</label>
@@ -164,8 +164,8 @@ export default function IdeasPage() {
         </section>
       ) : null}
 
-      {loading ? <div className="text-right text-sm text-zinc-500">جاري التحميل...</div> : null}
-      {error ? <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-right text-sm text-rose-100">{error}</div> : null}
+      {loading ? <div className="meta-text text-right">جاري التحميل...</div> : null}
+      {error ? <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-right text-base leading-8 text-rose-100">{error}</div> : null}
       {!loading && !error && visibleIdeas.length === 0 ? (
         <EmptyState title="لا توجد أفكار" description="أضف فكرة جديدة لتظهر هنا." icon={<Plus className="h-5 w-5" />} />
       ) : null}

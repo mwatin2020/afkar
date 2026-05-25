@@ -94,7 +94,7 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-[60px] items-center justify-between px-4">
           <HamburgerButton open={drawerOpen} onClick={() => setDrawerOpen((value) => !value)} />
           <div className={cn("min-w-0 flex-1 px-3", dir === "rtl" ? "text-right" : "text-center")}>
-            <div className="truncate text-base font-semibold">{pageTitle}</div>
+            <div className="truncate text-[19px] font-semibold leading-none">{pageTitle}</div>
           </div>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.03] text-[var(--muted-foreground)]">
             <Lock className="h-4 w-4" />
@@ -109,8 +109,8 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
               <Lock className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-white">{t.nav.privateVault}</div>
-              <div className="text-xs text-[var(--muted-foreground)]">{language === "ar" ? "واجهة مبسطة للأفكار" : "Ideas-only workspace"}</div>
+              <div className="text-[15px] font-semibold text-white">{t.nav.privateVault}</div>
+              <div className="meta-text">{language === "ar" ? "واجهة مبسطة للأفكار" : "Ideas-only workspace"}</div>
             </div>
           </div>
 
@@ -123,7 +123,7 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-colors",
+                    "flex items-center gap-3 rounded-2xl px-3 py-3 text-[15px] transition-colors",
                     active ? "bg-white/[0.06] text-white" : "text-[var(--muted-foreground)] hover:bg-white/[0.04] hover:text-white",
                   )}
                 >
@@ -162,8 +162,8 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
               <Lock className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-white">{t.nav.privateVault}</div>
-              <div className="text-xs text-[var(--muted-foreground)]">{pageTitle}</div>
+              <div className="text-[15px] font-semibold text-white">{t.nav.privateVault}</div>
+              <div className="meta-text">{pageTitle}</div>
             </div>
           </div>
           <button
@@ -186,7 +186,7 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 onClick={() => setDrawerOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl px-3 py-3 text-sm transition-colors",
+                  "flex items-center gap-3 rounded-2xl px-3 py-3 text-[15px] transition-colors",
                   active ? "bg-white/[0.07] text-white" : "text-[var(--muted-foreground)] hover:bg-white/[0.04] hover:text-white",
                 )}
               >

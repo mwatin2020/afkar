@@ -19,8 +19,8 @@ export function EmptyState({
       )}
     >
       {icon ? <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[var(--muted-foreground)]">{icon}</div> : null}
-      <div className="text-base font-medium text-white">{title}</div>
-      {description ? <div className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{description}</div> : null}
+      <div className="text-lg font-semibold leading-8 text-white">{title}</div>
+      {description ? <div className="muted-readable mt-2 text-base leading-8">{description}</div> : null}
     </div>
   );
 }
