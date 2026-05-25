@@ -6,10 +6,8 @@ import { toast } from "sonner";
 
 import { IdeaCard } from "@/components/ideas/IdeaCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
-import { PageHeader } from "@/components/ui/page-header";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import type { Idea } from "@/lib/types";
@@ -100,73 +98,83 @@ export default function IdeasPage() {
   }
 
   return (
-    <div dir="rtl" className="space-y-6">
-      <PageHeader title="الأفكار" description="مساحة سريعة ومباشرة لحفظ الأفكار والرجوع إليها من الهاتف بسهولة." />
+    <div dir="rtl" className="space-y-5">
+      <section className="space-y-1 text-right">
+        <h1 className="text-[26px] font-semibold tracking-tight text-white">الأفكار</h1>
+        <p className="text-sm leading-7 text-[var(--muted-foreground)]">احفظ الفكرة بسرعة ثم ارجع إليها لاحقًا.</p>
+      </section>
 
-      <Card className="border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
-        <CardHeader className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Button
+            variant={showCreate ? "outline" : "default"}
+            size="sm"
+            className="shrink-0 rounded-full px-3"
+            onClick={() => setShowCreate((value) => !value)}
+          >
+            {showCreate ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+            <span className="sm:hidden">{showCreate ? "إغلاق" : "+ فكرة"}</span>
+            <span className="hidden sm:inline">{showCreate ? "إغلاق" : "فكرة جديدة"}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 rounded-full px-3"
+            onClick={() => setSort((current) => (current === "newest" ? "oldest" : "newest"))}
+          >
+            {sort === "newest" ? <ArrowDownAZ className="h-3.5 w-3.5" /> : <ArrowUpAZ className="h-3.5 w-3.5" />}
+            {sort === "newest" ? "الأحدث" : "الأقدم"}
+          </Button>
+
+          <div className="min-w-0 flex-1">
             <Input
               dir="rtl"
-              className="flex-1 text-right"
+              className="h-10 rounded-xl border-white/8 bg-white/[0.03] text-right"
               placeholder="ابحث في الأفكار"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <div className="flex items-center gap-2">
-              <Button variant="outline" className="min-w-24" onClick={() => setSort((current) => (current === "newest" ? "oldest" : "newest"))}>
-                {sort === "newest" ? <ArrowDownAZ className="h-4 w-4" /> : <ArrowUpAZ className="h-4 w-4" />}
-                {sort === "newest" ? "الأحدث" : "الأقدم"}
-              </Button>
-              <Button className="min-w-28" onClick={() => setShowCreate((value) => !value)}>
-                {showCreate ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                فكرة جديدة
+          </div>
+        </div>
+
+        <div className="text-right text-sm text-zinc-500">{visibleIdeas.length} فكرة</div>
+      </section>
+
+      {showCreate ? (
+        <section className="rounded-[18px] border border-white/8 bg-white/[0.025] p-4">
+          <div className="space-y-4">
+            <div className="text-right">
+              <h2 className="text-sm font-semibold text-white">فكرة جديدة</h2>
+            </div>
+            <div>
+              <label className="field-label">اسم الفكرة</label>
+              <Input dir="rtl" className="h-11 rounded-xl text-right" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            </div>
+            <div>
+              <label className="field-label">محتوى الفكرة</label>
+              <Textarea dir="rtl" className="min-h-32 rounded-[18px] text-right" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+            </div>
+            <div className="flex justify-start">
+              <Button size="sm" className="rounded-full px-4" onClick={createIdea} disabled={submitting}>
+                {submitting ? "جاري الإنشاء..." : "إضافة"}
               </Button>
             </div>
           </div>
-          <div className="text-sm text-zinc-400">{visibleIdeas.length} فكرة</div>
-        </CardHeader>
+        </section>
+      ) : null}
 
-        <CardContent className="space-y-5">
-          {showCreate ? (
-            <Card className="border-white/10 bg-[#11161d]">
-              <CardHeader>
-                <CardTitle>فكرة جديدة</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="field-label">اسم الفكرة</label>
-                  <Input dir="rtl" className="text-right" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                </div>
-                <div>
-                  <label className="field-label">محتوى الفكرة</label>
-                  <Textarea
-                    dir="rtl"
-                    className="min-h-36 text-right"
-                    value={form.content}
-                    onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  />
-                </div>
-                <Button onClick={createIdea} disabled={submitting}>
-                  {submitting ? "جاري الإنشاء..." : "إضافة الفكرة"}
-                </Button>
-              </CardContent>
-            </Card>
-          ) : null}
+      {loading ? <div className="text-right text-sm text-zinc-500">جاري التحميل...</div> : null}
+      {error ? <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-right text-sm text-rose-100">{error}</div> : null}
+      {!loading && !error && visibleIdeas.length === 0 ? (
+        <EmptyState title="لا توجد أفكار" description="أضف فكرة جديدة لتظهر هنا." icon={<Plus className="h-5 w-5" />} />
+      ) : null}
 
-          {loading ? <div className="text-sm text-zinc-500">جاري التحميل...</div> : null}
-          {error ? <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error}</div> : null}
-          {!loading && !error && visibleIdeas.length === 0 ? (
-            <EmptyState title="لا توجد أفكار" description="أضف فكرة جديدة لتظهر هنا." icon={<Plus className="h-5 w-5" />} />
-          ) : null}
-
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {visibleIdeas.map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {visibleIdeas.map((idea) => (
+          <IdeaCard key={idea.id} idea={idea} />
+        ))}
+      </section>
     </div>
   );
 }

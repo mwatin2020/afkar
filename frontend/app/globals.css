@@ -37,6 +37,7 @@ body {
   font-family: "Segoe UI", "IBM Plex Sans Arabic", "SF Pro Display", "Helvetica Neue", sans-serif;
   background-image: linear-gradient(180deg, #0d1117 0%, #0f141b 100%);
   letter-spacing: -0.01em;
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -64,9 +65,9 @@ body {
 }
 
 .glass-panel {
-  background: rgba(21, 27, 35, 0.94);
+  background: rgba(18, 24, 33, 0.88);
   backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.14);
 }
 
 .section-grid {
@@ -86,4 +87,11 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted-foreground);
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
