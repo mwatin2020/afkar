@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Private Task & Idea Vault",
-  description: "Local-only command center for ideas, projects, tasks, and sandbox reviews.",
+  description: "Local-only mobile-first vault for capturing and reviewing private ideas.",
 };
 
 export default function RootLayout({

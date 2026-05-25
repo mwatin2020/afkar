@@ -56,10 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setStoredUser(nextUser);
           setUser(nextUser);
           if (typeof window !== "undefined") {
-            window.location.href = "/dashboard";
+            window.location.href = "/ideas";
             return;
           }
-          router.push("/dashboard");
+          router.push("/ideas");
         },
         logout: () => {
           clearToken();

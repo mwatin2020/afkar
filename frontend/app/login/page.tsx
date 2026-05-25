@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.replace("/dashboard");
+      router.replace("/ideas");
     }
   }, [router, user]);
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
             <div className="rounded-[28px] border border-white/8 bg-white/[0.04] p-5">
               <Database className="h-5 w-5 text-sky-300" />
               <div className="mt-4 text-sm font-medium text-white">Local PostgreSQL</div>
-              <div className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">Your projects, tasks, and ideas remain in your own vault.</div>
+              <div className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">Your private ideas remain stored in your local vault.</div>
             </div>
           </div>
         </section>

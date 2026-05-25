@@ -1,20 +1,17 @@
 "use client";
 
-import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Copy, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { IdeaMetaSidebar } from "@/components/ideas/IdeaMetaSidebar";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
-import { EntityBadge } from "@/components/ui/entity-badge";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
-import type { Idea, Project } from "@/lib/types";
+import type { Idea } from "@/lib/types";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("ar", {
@@ -24,83 +21,14 @@ function formatDate(date: string) {
   });
 }
 
-function renderInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
-  return parts.map((part, index) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return (
-        <strong key={`${part}-${index}`} className="font-semibold text-[#f0f0f0]">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-
-    return <Fragment key={`${part}-${index}`}>{part}</Fragment>;
-  });
-}
-
-function renderMarkdown(content: string): ReactNode[] {
-  const lines = content.split(/\r?\n/);
-  const blocks: ReactNode[] = [];
-  let paragraph: string[] = [];
-  let ordered: string[] = [];
-
-  const flushParagraph = () => {
-    if (!paragraph.length) return;
-    const text = paragraph.join(" ").trim();
-    if (text) {
-      blocks.push(
-        <p key={`p-${blocks.length}`} className="text-[15px] leading-[2] text-[#c8c8c8]">
-          {renderInlineMarkdown(text)}
-        </p>,
-      );
-    }
-    paragraph = [];
-  };
-
-  const flushOrdered = () => {
-    if (!ordered.length) return;
-    blocks.push(
-      <ol key={`ol-${blocks.length}`} className="list-inside list-decimal space-y-[10px] text-[15px] leading-[2] text-[#c8c8c8]">
-        {ordered.map((item, index) => (
-          <li key={`${item}-${index}`}>{renderInlineMarkdown(item)}</li>
-        ))}
-      </ol>,
-    );
-    ordered = [];
-  };
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    const listMatch = line.match(/^\d+\.\s+(.*)$/);
-
-    if (!line) {
-      flushParagraph();
-      flushOrdered();
-      continue;
-    }
-
-    if (listMatch) {
-      flushParagraph();
-      ordered.push(listMatch[1]);
-      continue;
-    }
-
-    flushOrdered();
-    paragraph.push(line);
-  }
-
-  flushParagraph();
-  flushOrdered();
-
-  return blocks;
+function buildSummary(content: string) {
+  return content.replace(/\s+/g, " ").trim().slice(0, 180);
 }
 
 export default function IdeaDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const [idea, setIdea] = useState<Idea | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -109,33 +37,19 @@ export default function IdeaDetailPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     title: "",
-    summary: "",
     content: "",
-    category: "PRODUCT",
-    confidentiality: "MEDIUM",
-    maturity: "EARLY",
-    status: "RAW",
-    project_id: "",
   });
 
   useEffect(() => {
-    api<Project[]>("/projects").then(setProjects);
-  }, []);
-
-  useEffect(() => {
     if (!params?.id) return;
+
+    setLoading(true);
     api<Idea>(`/ideas/${params.id}`)
       .then((data) => {
         setIdea(data);
         setForm({
           title: data.title,
-          summary: data.summary,
           content: data.content,
-          category: data.category,
-          confidentiality: data.confidentiality,
-          maturity: data.maturity,
-          status: data.status,
-          project_id: data.project_id ? String(data.project_id) : "",
         });
         setError(null);
       })
@@ -143,10 +57,9 @@ export default function IdeaDetailPage() {
       .finally(() => setLoading(false));
   }, [params?.id]);
 
-  const lastModified = useMemo(() => (idea ? formatDate(idea.updated_at) : ""), [idea]);
-
   async function handleCopy() {
     if (!idea) return;
+
     try {
       await navigator.clipboard.writeText(`${idea.title}\n\n${idea.content}`);
       toast.success("تم نسخ الفكرة.");
@@ -157,22 +70,28 @@ export default function IdeaDetailPage() {
 
   async function handleSave() {
     if (!idea) return;
+    if (!form.title.trim() || !form.content.trim()) {
+      toast.error("اسم الفكرة ومحتوى الفكرة مطلوبان.");
+      return;
+    }
+
     setSaving(true);
     try {
       const updated = await api<Idea>(`/ideas/${idea.id}`, {
         method: "PATCH",
         body: JSON.stringify({
-          title: form.title,
-          summary: form.summary,
-          content: form.content,
-          category: form.category,
-          confidentiality: form.confidentiality,
-          maturity: form.maturity,
-          status: form.status,
-          project_id: form.project_id ? Number(form.project_id) : null,
+          title: form.title.trim(),
+          summary: buildSummary(form.content),
+          content: form.content.trim(),
+          category: idea.category,
+          confidentiality: idea.confidentiality,
+          maturity: idea.maturity,
+          status: idea.status,
+          project_id: idea.project_id,
           tag_ids: idea.tags.map((tag) => tag.id),
         }),
       });
+
       setIdea(updated);
       setEditing(false);
       toast.success("تم حفظ التغييرات.");
@@ -185,10 +104,11 @@ export default function IdeaDetailPage() {
 
   async function handleDelete() {
     if (!idea) return;
+
     setDeleting(true);
     try {
       await api<Idea>(`/ideas/${idea.id}/soft-delete`, { method: "PATCH" });
-      toast.success("تم نقل الفكرة إلى سلة المحذوفات.");
+      toast.success("تم حذف الفكرة.");
       router.push("/ideas");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "فشل حذف الفكرة.");
@@ -199,7 +119,7 @@ export default function IdeaDetailPage() {
   }
 
   if (loading) return <div dir="rtl" className="text-sm text-zinc-500">جاري التحميل...</div>;
-  if (error || !idea) return <div dir="rtl" className="rounded-xl border border-rose-400/15 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{error || "تعذر العثور على الفكرة."}</div>;
+  if (error || !idea) return <div dir="rtl" className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">{error || "تعذر العثور على الفكرة."}</div>;
 
   return (
     <div dir="rtl" className="space-y-6">
@@ -207,17 +127,15 @@ export default function IdeaDetailPage() {
         open={deleteOpen}
         loading={deleting}
         title="حذف الفكرة؟"
-        description="سيتم نقل الفكرة إلى سلة المحذوفات. يمكنك استعادتها لاحقًا."
+        description="سيتم نقل الفكرة إلى سلة المحذوفات."
         onCancel={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
       />
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <Link href="/ideas" className="text-sm text-zinc-400 transition-colors hover:text-white">
-            ← الأفكار
-          </Link>
-        </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Link href="/ideas" className="text-sm text-zinc-400 transition-colors hover:text-white">
+          العودة إلى الأفكار
+        </Link>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" onClick={handleCopy}>
             <Copy className="h-4 w-4" />
@@ -225,87 +143,45 @@ export default function IdeaDetailPage() {
           </Button>
           <Button variant="outline" onClick={() => setEditing((value) => !value)}>
             <Pencil className="h-4 w-4" />
-            تحرير
+            {editing ? "إغلاق" : "تحرير"}
           </Button>
-          <Button variant="outline" className="mr-2 border-rose-500/40 text-rose-300 hover:bg-rose-500/10 hover:text-rose-200" onClick={() => setDeleteOpen(true)}>
+          <Button variant="outline" className="border-rose-500/40 text-rose-300 hover:bg-rose-500/10 hover:text-rose-200" onClick={() => setDeleteOpen(true)}>
             <Trash2 className="h-4 w-4" />
             حذف
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-400">
-        <EntityBadge value={idea.status} />
-        <span>آخر تعديل: {lastModified}</span>
-      </div>
-
-      <div className="flex flex-col xl:flex-row-reverse">
-        <IdeaMetaSidebar idea={idea} />
-
-        <main className="min-w-0 flex-1 px-0 py-6 md:px-4 xl:px-10 xl:py-8">
-          {editing ? (
-            <div className="space-y-5">
+      <section className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5 md:p-6">
+        {editing ? (
+          <div className="space-y-4">
+            <div>
+              <label className="field-label">اسم الفكرة</label>
               <Input dir="rtl" className="text-right" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-              <Input dir="rtl" className="text-right" value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
-              <Textarea dir="rtl" className="min-h-[420px] text-right" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
-              <div className="grid gap-4 md:grid-cols-2">
-                <Select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                  <option value="PRODUCT">منتج</option>
-                  <option value="TECHNICAL">تقنية</option>
-                  <option value="PHILOSOPHY">فلسفة</option>
-                  <option value="BUSINESS">أعمال</option>
-                  <option value="PATENT">براءة</option>
-                  <option value="PERSONAL">شخصية</option>
-                  <option value="OTHER">أخرى</option>
-                </Select>
-                <Select value={form.project_id} onChange={(e) => setForm({ ...form, project_id: e.target.value })}>
-                  <option value="">بدون مشروع</option>
-                  {projects.map((project) => (
-                    <option key={project.id} value={String(project.id)}>
-                      {project.name}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="grid gap-4 md:grid-cols-3">
-                <Select value={form.confidentiality} onChange={(e) => setForm({ ...form, confidentiality: e.target.value })}>
-                  <option value="LOW">منخفض</option>
-                  <option value="MEDIUM">متوسط</option>
-                  <option value="HIGH">عال</option>
-                  <option value="SECRET">سري</option>
-                </Select>
-                <Select value={form.maturity} onChange={(e) => setForm({ ...form, maturity: e.target.value })}>
-                  <option value="RAW">خام</option>
-                  <option value="EARLY">مبكرة</option>
-                  <option value="MEDIUM">متوسط</option>
-                  <option value="STRONG">قوية</option>
-                  <option value="READY">جاهزة</option>
-                </Select>
-                <Select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                  <option value="RAW">خام</option>
-                  <option value="SANDBOX">مختبر</option>
-                  <option value="UNDER_REVIEW">تحت المراجعة</option>
-                  <option value="APPROVED">معتمدة</option>
-                  <option value="FROZEN">مجمّدة</option>
-                </Select>
-              </div>
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
-              </Button>
             </div>
-          ) : (
-            <>
-              <h1 className="mb-7 text-right text-[28px] font-semibold text-[#f0f0f0]">{idea.title}</h1>
-              <div dir="rtl" className="space-y-4 text-right">
-                {renderMarkdown(idea.content)}
-                <div className="border-r-2 border-[#333] pe-4 text-right text-[14px] leading-7 text-[#888]">
-                  {idea.summary}
-                </div>
-              </div>
-            </>
-          )}
-        </main>
-      </div>
+            <div>
+              <label className="field-label">محتوى الفكرة</label>
+              <Textarea
+                dir="rtl"
+                className="min-h-[320px] text-right"
+                value={form.content}
+                onChange={(e) => setForm({ ...form, content: e.target.value })}
+              />
+            </div>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <div className="space-y-2 text-right">
+              <h1 className="text-2xl font-semibold text-white md:text-3xl">{idea.title}</h1>
+              <div className="text-sm text-zinc-400">التاريخ: {formatDate(idea.updated_at || idea.created_at)}</div>
+            </div>
+            <div className="whitespace-pre-wrap text-right text-[15px] leading-8 text-zinc-200">{idea.content}</div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

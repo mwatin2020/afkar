@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Clock3 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import type { Idea } from "@/lib/types";
 
 function formatDate(date: string) {
@@ -14,53 +13,25 @@ function formatDate(date: string) {
   });
 }
 
-function statusStyles(status: string) {
-  if (status === "RAW") return "bg-[#FAC775] text-[#633806]";
-  if (status === "APPROVED") return "bg-[#C0DD97] text-[#3B6D11]";
-  return "bg-white/10 text-white/80";
-}
-
-function statusLabel(status: string) {
-  if (status === "RAW") return "خام";
-  if (status === "APPROVED") return "مكتملة";
-  if (status === "DELETED") return "محذوفة";
-  return status.replaceAll("_", " ");
-}
-
-function tagLabels(idea: Idea) {
-  return [idea.maturity, idea.confidentiality, idea.category]
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((value) => value.replaceAll("_", " "));
-}
-
 export function IdeaCard({ idea }: { idea: Idea }) {
+  const preview = idea.summary?.trim() || idea.content;
+
   return (
     <Link
       href={`/ideas/${idea.id}`}
-      className="flex min-h-[182px] flex-col rounded-xl border border-white/10 bg-[#171717] transition-all hover:-translate-y-0.5 hover:border-white/20"
+      className="flex min-h-[208px] flex-col rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.025))] p-4 transition-all hover:-translate-y-0.5 hover:border-white/20"
     >
-      <div className="flex items-start justify-between gap-3 p-4">
-        <div className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles(idea.status)}`}>{statusLabel(idea.status)}</div>
-        <div dir="rtl" className="min-w-0 flex-1 text-right text-[15px] font-medium text-white">
-          {idea.title}
-        </div>
+      <div dir="rtl" className="text-right">
+        <h2 className="line-clamp-2 text-base font-semibold text-white">{idea.title}</h2>
       </div>
-      <div dir="rtl" className="flex-1 px-4 pb-4 text-right text-sm leading-7 text-zinc-400">
-        <p className="line-clamp-2">{idea.summary}</p>
+
+      <div dir="rtl" className="mt-3 flex-1 text-right text-sm leading-7 text-zinc-300">
+        <p className="line-clamp-5 whitespace-pre-wrap">{preview}</p>
       </div>
-      <div className="mt-auto flex items-center justify-between border-t border-white/10 px-4 py-3 text-xs text-zinc-500">
-        <div className="flex flex-wrap justify-end gap-2">
-          {tagLabels(idea).map((tag) => (
-            <Badge key={tag} className="border-white/10 bg-white/[0.03] text-zinc-300">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Clock3 className="h-3.5 w-3.5" />
-          <span>{formatDate(idea.created_at)}</span>
-        </div>
+
+      <div className="mt-4 flex items-center justify-end gap-1.5 border-t border-white/10 pt-3 text-xs text-zinc-500">
+        <Clock3 className="h-3.5 w-3.5" />
+        <span>{formatDate(idea.updated_at || idea.created_at)}</span>
       </div>
     </Link>
   );
