@@ -21,3 +21,5 @@ class User(BaseModel):
     ideas = relationship("Idea", back_populates="owner")
     tags = relationship("Tag", back_populates="owner")
     activity_logs = relationship("ActivityLog", back_populates="owner")
+    memories = relationship("Memory", back_populates="owner", cascade="all, delete-orphan")
+

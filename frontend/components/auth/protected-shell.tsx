@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Lightbulb, Lock, LogOut, Settings, X } from "lucide-react";
+import { Brain, Lightbulb, Lock, LogOut, Settings, X } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-provider";
 import { LanguageToggle } from "@/components/i18n/language-toggle";
@@ -45,15 +45,17 @@ export function ProtectedShell({ children }: { children: React.ReactNode }) {
   const items = useMemo<NavItem[]>(
     () => [
       { href: "/ideas", label: t.nav.ideas, icon: Lightbulb },
+      { href: "/memory", label: t.nav.memory, icon: Brain },
       { href: "/settings", label: t.nav.settings, icon: Settings },
     ],
-    [t.nav.ideas, t.nav.settings],
+    [t.nav.ideas, t.nav.memory, t.nav.settings],
   );
 
   const pageTitle = useMemo(() => {
     if (pathname.startsWith("/settings")) return t.nav.settings;
+    if (pathname.startsWith("/memory")) return t.nav.memory;
     return t.nav.ideas;
-  }, [pathname, t.nav.ideas, t.nav.settings]);
+  }, [pathname, t.nav.ideas, t.nav.memory, t.nav.settings]);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");

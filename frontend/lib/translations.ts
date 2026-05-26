@@ -52,6 +52,7 @@ export const en = {
     activity: "Activity",
     settings: "Settings",
     welcome: "Welcome back, {name}",
+    memory: "Memory",
   },
   login: {
     createLocalAdmin: "Create Your Local Admin",
@@ -170,6 +171,12 @@ export const en = {
     privacyValue: "Local only / Offline-first / No cloud services / No telemetry",
     exportPreview: "Export Preview",
   },
+  memory: {
+    title: "Memory Vault",
+    placeholder: "Jot down something to remember...",
+    empty: "Memory is empty of quick thoughts.",
+    add: "Remember",
+  },
 } as const;
 
 export type TranslationSchema = {
@@ -230,6 +237,7 @@ export const ar: TranslationSchema = {
     activity: "النشاط",
     settings: "الإعدادات",
     welcome: "مرحبًا بعودتك، {name}",
+    memory: "الذاكرة السريعة",
   },
   login: {
     createLocalAdmin: "إنشاء مدير محلي",
@@ -347,6 +355,12 @@ export const ar: TranslationSchema = {
     privacy: "الخصوصية",
     privacyValue: "محلي فقط / يعمل بدون اتصال / بدون خدمات سحابية / بدون تتبع",
     exportPreview: "معاينة التصدير",
+  },
+  memory: {
+    title: "مفكرة الذاكرة السريعة",
+    placeholder: "اكتب شيئاً لتتذكره لاحقاً...",
+    empty: "الذاكرة خالية من الأفكار والملاحظات السريعة.",
+    add: "تذكر",
   },
 };
 

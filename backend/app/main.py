@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import activity, auth, dashboard, health, ideas, projects, sandbox, settings as settings_routes, tags, tasks
+from app.api.routes import activity, auth, dashboard, health, ideas, projects, sandbox, settings as settings_routes, tags, tasks, memories
 from app.core.config import get_settings
 
 
@@ -30,3 +30,5 @@ app.include_router(sandbox.router)
 app.include_router(tags.router)
 app.include_router(activity.router)
 app.include_router(settings_routes.router)
+app.include_router(memories.router)
+

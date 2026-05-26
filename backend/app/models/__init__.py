@@ -2,6 +2,7 @@ from app.core.database import Base
 from app.models.activity_log import ActivityLog
 from app.models.associations import IdeaTag, TaskTag
 from app.models.idea import Idea
+from app.models.memory import Memory
 from app.models.project import Project
 from app.models.tag import Tag
 from app.models.task import Task
@@ -12,9 +13,11 @@ __all__ = [
     "Base",
     "Idea",
     "IdeaTag",
+    "Memory",
     "Project",
     "Tag",
     "Task",
     "TaskTag",
     "User",
 ]
+
